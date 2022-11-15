@@ -6,11 +6,8 @@
 #' calculating the standard deviations of the residuals.
 #'
 #' @param hyperparam A vector of hyper-parameter values for the full GP.
-#' @param data A data.frame of observation data.
-#'   - Column 1: Outcome (Y)
-#'   - Column 2: Exposure or treatment (w)
-#'   - Column 3~m: Confounders (C)
-#' @param GPS A vector of estimated GPS at the observed exposure levels.
+#' @param sigma_obs The covariance matrix between the observed data points.
+#' @param inv_sigma_obs The inverse of the covariance matrix between the observed data points.
 #'
 #' @return
 #' A scalar of estimated standard deviation of the nugget term in full GP.
