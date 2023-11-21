@@ -31,7 +31,9 @@ reference:
 articles:
   - title: Introduction
     navbar: Introduction
-    contents: [Standard-Gaussian-Processes, Nearest-neighbor-Gaussian-Processes]
+    contents: [Standard-Gaussian-Processes,
+               Nearest-neighbor-Gaussian-Processes,
+               A-Note-on-Choosing-Hyperparameters]
 
   - title: Collabration
     navbar: Collabration
