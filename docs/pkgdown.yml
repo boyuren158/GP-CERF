@@ -1,12 +1,13 @@
-pandoc: 3.1.2
+pandoc: 2.19.2
 pkgdown: 2.0.7
 pkgdown_sha: ~
 articles:
+  A-Note-on-Choosing-Hyperparameters: A-Note-on-Choosing-Hyperparameters.html
   Developers-Guide: Developers-Guide.html
   GPCERF: GPCERF.html
   Nearest-neighbor-Gaussian-Processes: Nearest-neighbor-Gaussian-Processes.html
   Standard-Gaussian-Processes: Standard-Gaussian-Processes.html
-last_built: 2023-08-08T21:15Z
+last_built: 2023-11-21T17:36Z
 urls:
   reference: https://NSAPH-Software.github.io/GPCERF/reference
   article: https://NSAPH-Software.github.io/GPCERF/articles
