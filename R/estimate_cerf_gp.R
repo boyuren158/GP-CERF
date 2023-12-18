@@ -234,8 +234,6 @@ estimate_cerf_gp <- function(data, w, gps_m, params,
       })
   }
 
-  logger::log_debug("Number of generated tuning results: {length(tune_res)}")
-
   # Tuning results include:
   # cb: covariate balance for each confounder. This is the average of all
   #     all covariate balance for each requested exposure values.
@@ -248,6 +246,7 @@ estimate_cerf_gp <- function(data, w, gps_m, params,
   # Select the combination of hyperparameters that provides the lowest
   # covariate balance ----------------------------------------------------------
   if (nrow(tune_params_subset) > 1) {
+    logger::log_debug("Number of generated tuning results: {length(tune_res)}")
     opt_idx <- order(sapply(tune_res, function(x) {mean(x$cb)}))[1]
   } else {
     opt_idx <- 1
