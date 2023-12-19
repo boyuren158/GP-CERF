@@ -203,7 +203,7 @@ The customized summary function provides the following:
 summary(cerf_nngp_obj)
 ```
 ```
-GPCERF nearest neighbore Gaussian process exposure response function object summary
+GPCERF nearest neighbor Gaussian process exposure response function object summary
 
 Optimal hyper parameters(#trial: 300): 
   alpha = 0.0278255940220712   beta = 0.215443469003188   g_sigma = 0.1
