@@ -16,11 +16,11 @@ authors:
     orcid: 0000-0002-5177-8598
     affiliation: "3"
 affiliations:
- - name: Research Computing, Harvard University, Cambridge, MA, United States of America
+ - name: Research Computing, Harvard University, Cambridge, Massachusetts, United States of America
    index: 1
- - name: McLean Hospital, Belmont, MA, United States of America
+ - name: McLean Hospital, Belmont, Massachusetts, United States of America
    index: 2
- - name: Department of Biostatistics, Harvard School of Public Health, Cambridge, MA, United States of America
+ - name: Department of Biostatistics, Harvard School of Public Health, Cambridge, Massachusetts, United States of America
    index: 3
 
 date: 15 March 2023
@@ -33,7 +33,7 @@ We present the GPCERF R package, which employs a novel Bayesian approach based o
 
 # Statement of need
 
-Existing R packages designed for estimating causal exposure-response functions with continuous exposures, like CausalGPS [@CausalGPS_R], generally use resampling methods such as bootstrap to ascertain the uncertainty of their estimates. In response to the challenges encountered with large datasets in these resampling-based algorithms, we have introduced a novel Bayesian approach. This method utilizes Gaussian Processes (GPs) as a prior for counterfactual outcome surfaces, offering a more flexible way to estimate the CERF.
+Existing R packages designed for estimating causal exposure-response functions (ERF) with continuous exposures, like CausalGPS [@CausalGPS_R], generally use resampling methods such as bootstrap to ascertain the uncertainty of their estimates. In response to the challenges encountered with large datasets in these resampling-based algorithms, we have introduced a novel Bayesian approach. This method utilizes Gaussian Processes (GPs) as a prior for counterfactual outcome surfaces, offering a more flexible way to estimate the CERF. To the best of the authors' knowledge, R packages for Exposure Response Function (ERF) estimation utilizing Bayesian nonparametric models are relatively rare. causaldrf [@causaldrf_R] uses Bayesian Additive Regression Trees (BART) for flexible causal ERF estimation. Due to the property of tree-based approaches, the resulting CERF is usually not smooth. BCEE [@bcee_R] applies a Bayesian model averaging approach for causal ERF estimation. bkmr [@bkmr_R] employs a kernel-based Bayesian model that is equivalent to a GP prior to estimate the effect of multivariate exposure on the outcome of interest. However, since it does not address explicitly confounding in the observation data, the resulting estimate does not have causal interpretation.
 
 While various R packages, like GauPro [@GauPro_2023], mlegp [@mlegp_2022], and GPfit [@GPfit_2019], offer Gaussian process regression capabilities, we chose not to use them. The primary reason is that these packages rely on traditional techniques for hyper-parameter tuning, such as sampling from the hyper-parameters' posterior distributions or maximizing the marginal likelihood function. Our approach, in contrast, aims to achieve optimal covariate balancing. By utilizing the posterior distributions of model parameters, we can automatically assess the uncertainty in our CERF estimates [for further details, see @Ren_2021_bayesian]. Since standard GPs are infamous for their scalability issues—particularly due to operations involving the inversion of covariance matrices—we adopt a nearest-neighbor GP (nnGP) prior to ensure computationally efficient inference of the CERF in large-scale datasets.
 
@@ -229,6 +229,17 @@ Original covariate balance:
 \autoref{fig:nngp} shows the result of `plot(cerf_nngp_obj)` function.
 
 ![Plot of nnGP models S3 object. Left: Estimated CERF with credible band. Right: Covariate balance of confounders before and after weighting with nnGP approach.\label{fig:nngp}](figures/readme_nngp.png){ width=100% }
+
+# Performance analyses of standard and nearest neighbor GP models
+
+The time complexity of the standard Gaussian Process (GP) model is $O(n^3)$, while for the nearest neighbor GP (nnGP) model, it is $O(n * m ^ 3)$, where $m$ is the number of neighbors. An in-depth discussion on achieving these complexities is outside the scope of this paper. Readers interested in further details can refer to @Ren_2021_bayesian. This section focuses on comparing the wall clock time of standard GP and nnGP models in calculating the Conditional Exposure Response Function (CERF) at a specific exposure level, $w$. We set the hyper-parameters to values at $\alpha = \beta = \gamma/\sigma = 1$. \autoref{fig:performance} shows the comparison of standard GP model with nnGP utilizing 50 nearest neighbors. Due to the differing parallelization architectures of the standard GP and nnGP in our package, we conducted this benchmark on a single core. The sample size was varied from 3,000 to 10,000, a range where nnGP begins to demonstrate notable efficiency over the standard GP. We repeat the process 20 times with different seed values. We plotted wall clock time against sample size for both methods. To enhance the visualization of the increasing rate of wall clock time, we applied a log transformation to both axes. For this specific set of analyses the estimated slope of 3.09 (ideally 3) for standard GP aligns with its $O(n^3)$ time complexity. According to the results, a sample size of 10,000 data samples is not large enough to establish a meaningful relationship for the time complexity of the nnGP model effectively.
+
+![Representation of Wall Clock Time (s) vs. Data Samples for Standard GP and nnGP Models. All computations are conducted with $w=1$ and $\alpha = \beta = \gamma/\sigma = 1$. The process is repeated 20 times using various seed values to ensure robustness. A jitter effect is applied to enhance the visibility of data points. Both axes are displayed on log10 scales. The solid lines represent the linear regression modeled as $lm(log10(WC) \textasciitilde log10(n))$. \label{fig:performance}](figures/gp_vs_nngp.png ){ width=80% }
+
+\autoref{fig:performance_nn} compares the performance of the nnGP model across three nearest neighbor categories: 50, 100, and 200, using a data sample sequence ranging from 5,000 to 100,000 with intervals of 5,000. For each category, different sets of runs demonstrate a linear relationship, consistent with an $O(n)$ time complexity, assuming that $m^3$ remains constant for varying sample sizes within each category. 
+
+![Representation of Wall Clock Time (s) vs. Data Samples of the nnGP model across different nearest neighbor categories (50, 100, 200) over a range of data sample sizes from 5,000 to 100,000 in 5,000 increments. . All computations are conducted with $w=1$ and $\alpha = \beta = \gamma/\sigma = 1$. Both axes are displayed on log10 scales. The solid lines represent the linear regression modeled as $lm(log10(WC) \textasciitilde log10(n))$. \label{fig:performance_nn}](figures/nngp_nnsize.png ){ width=80% }
+
 
 # Software related features
 
