@@ -30,9 +30,9 @@ RUN R -e "install.packages(c( \
     'rlang', \
     'Rfast', \
     'SuperLearner', \
+    'ranger', \
     'wCorr'), repos='https://cloud.r-project.org')"
 
-ENV RENV_VERSION 0.15.1
 RUN R -e "install.packages('remotes', repos = c(CRAN = 'https://cloud.r-project.org'))"
-RUN R -e "remotes::install_github('rstudio/renv@${RENV_VERSION}')"
+
 

@@ -73,12 +73,12 @@ Optimal hyper parameters(#trial: 300):
   alpha = 12.9154966501488   beta = 12.9154966501488   g_sigma = 0.1
 
 Optimal covariate balance: 
-  cf1 = 0.072 
+  cf1 = 0.069 
   cf2 = 0.082 
-  cf3 = 0.062 
-  cf4 = 0.068 
+  cf3 = 0.063 
+  cf4 = 0.066 
   cf5 = 0.056 
-  cf6 = 0.082
+  cf6 = 0.081
 
 Original covariate balance: 
   cf1 = 0.222 
@@ -87,7 +87,7 @@ Original covariate balance:
   cf4 = 0.318 
   cf5 = 0.198 
   cf6 = 0.257
-            ----***----       
+            ----***----      
 ```
 
 <p>
@@ -148,10 +148,10 @@ Optimal hyper parameters(#trial: 300):
   alpha = 0.0278255940220712   beta = 0.215443469003188   g_sigma = 0.1
 
 Optimal covariate balance: 
-  cf1 = 0.058 
-  cf2 = 0.071 
-  cf3 = 0.087 
-  cf4 = 0.066 
+  cf1 = 0.062 
+  cf2 = 0.070 
+  cf3 = 0.091 
+  cf4 = 0.062 
   cf5 = 0.076 
   cf6 = 0.088
 
@@ -162,7 +162,7 @@ Original covariate balance:
   cf4 = 0.296 
   cf5 = 0.208 
   cf6 = 0.225
-            ----***----                    
+            ----***----                       
 ```
 
 <p>

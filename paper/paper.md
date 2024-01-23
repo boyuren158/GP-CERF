@@ -33,7 +33,7 @@ We present the GPCERF R package, which employs a novel Bayesian approach based o
 
 # Statement of need
 
-In the GPCERF R package we have introduced a novel Bayesian approach. This method utilizes Gaussian Processes (GPs) as a prior for counterfactual outcome surfaces, offering a flexible way to estimate the CERF with automatic uncertainty quantification. Additionally, it can incorporate prior information about the level of smoothness of the underlying causal ERF through specifically designed covariance functions. Popular R packages for estimating causal ERF, such as CausalGPS [@CausalGPS_R], ipw [@ipw_paper], npcausal [@Kennedy2017npcausal] and CBPS [@CBPS_R], are primarily built on frequentist frameworks. To the best of the authors’ knowledge, however, Bayesian nonparametric alternatives are relatively scarce. causaldrf [@causaldrf_R] uses Bayesian Additive Regression Trees (BART) for flexible causal ERF estimation. The resulting CERF is usually not smooth due to the use of regression trees. Yet, it can achieve high accuracy when the underlying ERF is discontinuous or resembles step functions. BCEE [@bcee_R] applies a Bayesian model averaging approach for causal ERF estimation. bkmr [@bkmr_R] employs a kernel-based Bayesian model, which is equivalent to a GP prior, to estimate the effect of multivariate exposure on the outcome of interest. However, since it does not explicitly address confounding in the observational data, the resulting estimate does not have causal interpretation.
+In the GPCERF R package we have introduced a novel Bayesian approach. This method utilizes Gaussian Processes (GPs) as a prior for counterfactual outcome surfaces, offering a flexible way to estimate the CERF with automatic uncertainty quantification. Additionally, it can incorporate prior information about the level of smoothness of the underlying causal ERF through specifically designed covariance functions. Popular R packages for estimating causal ERF, such as CausalGPS [@CausalGPS_R], ipw [@ipw_paper], npcausal [@Kennedy2017npcausal] and CBPS [@CBPS_R], are primarily built on frequentist frameworks. To the best of the authors’ knowledge, however, Bayesian nonparametric alternatives are relatively scarce. causaldrf [@causaldrf_R] uses Bayesian Additive Regression Trees (BART) for flexible causal ERF estimation and it is particularly useful when the underlying ERF is discontinuous or resembles step functions. The resulting CERF is usually not smooth due to the use of regression trees. Yet, it can achieve high accuracy when the underlying ERF is discontinuous or resembles step functions. BCEE [@bcee_R] applies a Bayesian model averaging approach for causal ERF estimation. bkmr [@bkmr_R] employs a kernel-based Bayesian model, which is equivalent to a GP prior, to estimate the effect of multivariate exposure on the outcome of interest. However, since it does not explicitly address confounding in the observational data, the resulting estimate does not have causal interpretation.
 
 While various R packages, like GauPro [@GauPro_2023], mlegp [@mlegp_2022], and GPfit [@GPfit_2019], offer Gaussian process regression capabilities, we chose not to use them. The primary reason is that these packages rely on traditional techniques for hyper parameter tuning, such as sampling from the hyper-parameters’ posterior distributions or maximizing the marginal likelihood function. Our approach, in contrast, aims to achieve optimal covariate balancing. By utilizing the posterior distributions of model parameters, we can automatically assess the uncertainty in our CERF estimates [for further details, see @Ren_2021_bayesian]. Since standard GPs are infamous for their scalability issues—particularly due to operations involving the inversion of covariance matrices—we adopt a nearest-neighbor GP (nnGP) prior to ensure computationally efficient inference of the CERF in large-scale datasets. Refer to \autoref{fig:performance} and \autoref{fig:performance_nn} for comparisons of the wall clock time between standard GP and nnGP.
 
@@ -104,6 +104,9 @@ cerf_gp_obj <- estimate_cerf_gp(sim_data,
                                 w_all,
                                 gps_m,
                                 params = params_lst,
+                                outcome_col = "Y",
+                                treatment_col = "treat",
+                                covariates_col = paste0("cf", seq(1,6)),
                                 nthread = 12)
 
 ```
@@ -120,12 +123,12 @@ Optimal hyper parameters(#trial: 300):
   alpha = 12.9154966501488   beta = 12.9154966501488   g_sigma = 0.1
 
 Optimal covariate balance: 
-  cf1 = 0.072 
+  cf1 = 0.069 
   cf2 = 0.082 
-  cf3 = 0.062 
-  cf4 = 0.068 
+  cf3 = 0.063 
+  cf4 = 0.066 
   cf5 = 0.056 
-  cf6 = 0.082
+  cf6 = 0.081
 
 Original covariate balance: 
   cf1 = 0.222 
@@ -134,7 +137,7 @@ Original covariate balance:
   cf4 = 0.318 
   cf5 = 0.198 
   cf6 = 0.257
-            ----***----     
+            ----***----      
 ```
 As one can see, as part of the grid search, 300 different combination of hyper parameters have been tried. \autoref{fig:gp} shows the causal exposure response function and achieved covariate balance in this simulated example.
 
@@ -191,6 +194,9 @@ cerf_nngp_obj <- estimate_cerf_nngp(sim_data,
                                     w_all,
                                     gps_m,
                                     params = params_lst,
+                                    outcome_col = "Y",
+                                    treatment_col = "treat",
+                                    covariates_col = paste0("cf", seq(1,6)),
                                     nthread = 12)
 
 ```
@@ -203,16 +209,16 @@ The customized summary function provides the following:
 summary(cerf_nngp_obj)
 ```
 ```
-GPCERF nearest neighbor Gaussian process exposure response function object summary
+GPCERF nearest neighbore Gaussian process exposure response function object summary
 
 Optimal hyper parameters(#trial: 300): 
   alpha = 0.0278255940220712   beta = 0.215443469003188   g_sigma = 0.1
 
 Optimal covariate balance: 
-  cf1 = 0.058 
-  cf2 = 0.071 
-  cf3 = 0.087 
-  cf4 = 0.066 
+  cf1 = 0.062 
+  cf2 = 0.070 
+  cf3 = 0.091 
+  cf4 = 0.062 
   cf5 = 0.076 
   cf6 = 0.088
 
@@ -223,7 +229,7 @@ Original covariate balance:
   cf4 = 0.296 
   cf5 = 0.208 
   cf6 = 0.225
-            ----***----    
+            ----***----      
 ```
 
 \autoref{fig:nngp} shows the result of `plot(cerf_nngp_obj)` function.
