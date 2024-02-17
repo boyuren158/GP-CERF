@@ -1,3 +1,9 @@
+# GPCERF 0.2.2 (2024-02-16)
+
+## Changed
+- `n_thread` -> `nthread` in `estimate_noise_nn` documentation.
+
+
 # GPCERF 0.2.1 (2023-01-15)
 
 ## Changed
