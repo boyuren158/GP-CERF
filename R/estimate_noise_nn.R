@@ -11,7 +11,7 @@
 #' levels.
 #' @param y_obs A vector of observed outcomes.
 #' @param n_neighbor A number of nearest neighbors on one side.
-#' @param n_thread A number of cores used in the estimation.
+#' @param nthread A number of cores used in the estimation.
 #' @param kernel_fn The covariance function of the GP.
 #'
 #' @return

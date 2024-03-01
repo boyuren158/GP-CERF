@@ -26,9 +26,9 @@ levels.}
 
 \item{n_neighbor}{A number of nearest neighbors on one side.}
 
-\item{kernel_fn}{The covariance function of the GP.}
+\item{nthread}{A number of cores used in the estimation.}
 
-\item{n_thread}{A number of cores used in the estimation.}
+\item{kernel_fn}{The covariance function of the GP.}
 }
 \value{
 A scalar of estimated standard deviation of the nugget term in nnGP.
