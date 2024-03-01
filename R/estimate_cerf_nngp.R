@@ -8,7 +8,8 @@
 #' match (the lowest covariate balance) for the provided set of hyperparameters.
 #'
 #' @param data A data.frame of observation data.
-#' @param w A vector of exposure level to compute CERF.
+#' @param w A vector of exposure level to compute CERF (please also see the
+#' notes).
 #' @param gps_m An S3 gps object including:
 #'   gps: A data.frame of GPS vectors.
 #'     - Column 1: GPS
@@ -35,6 +36,18 @@
 #' @param kernel_fn A kernel function. A default value is a Gaussian Kernel.
 #' @param nthread An integer value that represents the number of threads to be
 #' used by internal packages.
+#'
+#' @note
+#' Please note that `w` is a vector representing a grid of exposure levels at
+#' which the CERF is to be estimated. This grid can include both observed and
+#' hypothetical values of the exposure variable. The purpose of defining this
+#' grid is to provide a structured set of points across the exposure spectrum
+#' for estimating the CERF. This approach is essential in nonparametric models
+#' like Gaussian Processes (GPs), where the CERF is evaluated at specific points
+#' to understand the relationship between the exposure and outcome variables
+#' across a continuum. It facilitates a comprehensive analysis by allowing
+#' practitioners to examine the effect of varying exposure levels, including
+#' those not directly observed in the dataset.
 #'
 #' @return
 #' A cerf_nngp object that includes the following values:

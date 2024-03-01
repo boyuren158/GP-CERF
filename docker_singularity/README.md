@@ -37,9 +37,9 @@ Run the following code to download and spin up the image.
 
 ```s
 docker run -it --rm \
-        -p 8230:8787 \
+        -p 8231:8787 \
         -e USER=rstudio \
         -e PASSWORD=pass \
-        -v "/path/to/your/folder/on/host:/home/rstudio/Project" nsaphsoftware/gpcerf_dev
+        -v $PWD:/home/rstudio/Project nsaphsoftware/gpcerf_dev
 
 ```

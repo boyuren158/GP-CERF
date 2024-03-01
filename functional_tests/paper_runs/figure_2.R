@@ -40,14 +40,9 @@ cerf_nngp_obj <- estimate_cerf_nngp(sim_data,
                                     params = params_lst,
                                     outcome_col = "Y",
                                     treatment_col = "treat",
-                                    covariates_col = "cf1", #paste0("cf", seq(1,6)),
+                                    covariates_col = paste0("cf", seq(1,6)),
                                     nthread = 12)
 
 
 summary(cerf_nngp_obj)
 plot(cerf_nngp_obj)
-
-# png("readme_nngp.png", width = 12, height = 4, units = "in", res = 300)
-# plot(cerf_nngp_obj)
-# dev.off()
-

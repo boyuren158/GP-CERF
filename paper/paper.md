@@ -16,11 +16,11 @@ authors:
     orcid: 0000-0002-5177-8598
     affiliation: "3"
 affiliations:
- - name: Research Computing, Harvard University, Cambridge, MA, United States of America
+ - name: University Research Computing and Data Services, Harvard University, Cambridge, Massachusetts, United States of America
    index: 1
- - name: McLean Hospital, Belmont, MA, United States of America
+ - name: McLean Hospital, Belmont, Massachusetts, United States of America
    index: 2
- - name: Department of Biostatistics, Harvard School of Public Health, Cambridge, MA, United States of America
+ - name: Department of Biostatistics, Harvard School of Public Health, Cambridge, Massachusetts, United States of America
    index: 3
 
 date: 15 March 2023
@@ -29,17 +29,19 @@ bibliography: paper.bib
 
 # Summary
 
-We present the GPCERF R package, which employs a novel Bayesian approach based on Gaussian Process (GP) to estimate the causal exposure-response function (CERF) for continuous exposures, along with associated uncertainties. R packages that target causal effects under a binary exposure setting exist [e.g., @MatchIt_R], as well as in the continuous exposure setting [e.g., @CausalGPS_R]. However, they often rely on a separate resampling stage to quantify uncertainty of the estimates, which can be computationally demanding. GPCERF provides a two-step end-to-end solution for causal inference with continuous exposures that is equipped with automatic and efficient uncertainty quantification. During the first step (the design phase), the algorithm searches for optimal hyperparameters (using the exposures and covariates) that achieve optimal covariate balance in the induced pseudo-population, i.e., that the correlation between the exposure and each covariate is close to zero. The selected hyperparameters are then used in the second step (the analysis phase) to estimate the CERF on the balanced data set and its associated uncertainty using two different types of GPs: a standard GP and a nearest-neighbor GP (nnGP). The standard GP offers high accuracy in estimating CERF but is also computationally intensive. The nnGP is a computationally efficient approximation of the standard GP and is well-suited for the analysis of large-scale datasets. 
+We present the GPCERF R package, which employs a novel Bayesian approach based on Gaussian Process (GP) to estimate the causal exposure-response function (CERF) for continuous exposures, along with associated uncertainties. R packages that target causal effects under a binary exposure setting exist [e.g., @MatchIt_R], as well as in the continuous exposure setting [e.g., @CausalGPS_R]. However, they often rely on a separate resampling stage to quantify uncertainty of the estimates. GPCERF provides a two-step end-to-end solution for causal inference with continuous exposures that is equipped with automatic and efficient uncertainty quantification. During the first step (the design phase), the algorithm searches for optimal hyperparameters (using the exposures and covariates) that achieve optimal covariate balance in the induced pseudo-population, i.e., that the correlation between the exposure and each covariate is close to zero. The selected hyperparameters are then used in the second step (the analysis phase) to estimate the CERF on the balanced data set and its associated uncertainty using two different types of GPs: a standard GP and a nearest-neighbor GP (nnGP). The standard GP offers high accuracy in estimating CERF but is also computationally intensive. The nnGP is a computationally efficient approximation of the standard GP and is well-suited for the analysis of large-scale datasets. 
 
 # Statement of need
 
-Existing R packages for estimating causal exposure-response functions with continuous exposures typically require resampling approaches, such as bootstrap, to determine the uncertainty of the estimates [e.g., @CausalGPS_R]. However, these resampling-based algorithms can become computationally burdensome when handling large datasets. To bridge this gap, we have developed a unique Bayesian methodology that employs a Gaussian Processes (GPs) prior for counterfactual outcome surfaces, thereby enabling more flexible estimation of the CERF. While various R packages, like GauPro [@GauPro_2023], mlegp [@mlegp_2022], and GPfit [@GPfit_2019], offer Gaussian process regression capabilities, we chose not to use them. The primary reason is that these packages rely on traditional techniques for hyper-parameter tuning, such as sampling from the hyper-parameters' posterior distributions or maximizing the marginal likelihood function. Our approach, in contrast, aims to achieve optimal covariate balancing. By utilizing the posterior distributions of model parameters, we can automatically assess the uncertainty in our CERF estimates [for further details, see @Ren_2021_bayesian]. Since standard GPs are infamous for their scalability issues—particularly due to operations involving the inversion of covariance matrices—we adopt a nearest-neighbor GP (nnGP) prior to ensure computationally efficient inference of the CERF in large-scale datasets.
+In the GPCERF R package we have introduced a novel Bayesian approach. This method utilizes Gaussian Processes (GPs) as a prior for counterfactual outcome surfaces, offering a flexible way to estimate the CERF with automatic uncertainty quantification. Additionally, it can incorporate prior information about the level of smoothness of the underlying causal ERF through specifically designed covariance functions. Popular R packages for estimating causal ERF, such as CausalGPS [@CausalGPS_R; @wu_2022], ipw [@ipw_paper], npcausal [@Kennedy2017npcausal] and CBPS [@CBPS_R; @Imai_2013; @Fong_2018], are primarily built on frequentist frameworks. To the best of the authors’ knowledge, however, Bayesian nonparametric alternatives are relatively scarce. causaldrf [@causaldrf_R] uses Bayesian Additive Regression Trees (BART) for flexible causal ERF estimation. BCEE [@bcee_R; @Talbot_2015; @Talbot_2022] applies a Bayesian model averaging approach for causal ERF estimation. bkmr [@bkmr_R; @Bobb_2014] employs a kernel-based Bayesian model, which is equivalent to a GP prior, to estimate the effect of multivariate exposure on the outcome of interest. However, since it does not explicitly address confounding in the observational data, the resulting estimate does not have causal interpretation.
+
+While various R packages, like GauPro [@GauPro_2023], mlegp [@mlegp_2022], and GPfit [@GPfit_2019; @GPfit_paper_2015], offer Gaussian process regression capabilities, we chose not to use them. The primary reason is that these packages rely on traditional techniques for hyper parameter tuning, such as sampling from the hyper-parameters’ posterior distributions or maximizing the marginal likelihood function. Our approach, in contrast, aims to achieve optimal covariate balancing. By utilizing the posterior distributions of model parameters, we can automatically assess the uncertainty in our CERF estimates [for further details, see @Ren_2021_bayesian]. Since standard GPs are infamous for their scalability issues—particularly due to operations involving the inversion of covariance matrices—we adopt a nearest-neighbor GP (nnGP) [@Datta_2016] prior to ensure computationally efficient inference of the CERF in large-scale datasets. Refer to \autoref{fig:performance} and \autoref{fig:performance_nn} for comparisons of the wall clock time between standard GP and nnGP.
 
 # Overview
 
-In the context of causal inference for continuous exposures, the main target for inference is the so-called casual exposure response function (CERF), which is defined as the expectation of the counterfactual outcomes over a range of exposure levels in a given population. If we denote the counterfactual outcome at exposure level $w$ by $Y(w)$, CERF is indeed the function $R(w) = \mathbb E(Y(w))$ defined on a set of $w$ of interest. One should be careful when estimating CERF from observational data, which usually contain not only the outcome $Y$ and exposure $W$, but also potential confounders $C$. The main reason is that if we do not adjust for the confounders $C$ properly, this may lead to biased estimation of $R(w)$. We choose to follow the approach in @Hirano_2004, which is based on the generalized propensity score (GPS) to adjust for confounding. GPS, denoted by $s(W,C)$, is defined as the conditional density of $W$ given $C$. It has been shown that one can obtain an unbiased estimator of the causal effect of $W$ provided the conditional distribution of $Y$ given $W$ and $s(W,C)$ is known [@Hirano_2004].
+In the context of causal inference for continuous exposures, one of the important targets for inference is the so-called casual exposure response function (CERF), which is defined as the expectation of the counterfactual outcomes over the observed covariates at a range of exposure levels in a given population. If we denote the counterfactual outcome at exposure level $w$ by $Y(w)$, CERF is indeed the function $R(w) = \mathbb E(Y(w))$ defined on a set of $w$ of interest. One should be careful when estimating CERF from observational data, which usually contain not only the outcome $Y$ and exposure $W$, but also potential confounders $C$. The main reason is that if we do not adjust for the confounders $C$ properly, this may lead to biased estimation of $R(w)$. We choose to follow the approach in @Hirano_2004, which is based on the generalized propensity score (GPS) to adjust for confounding. GPS, denoted by $s(W,C)$, is defined as the conditional density of $W$ given $C$. It has been shown that one can obtain an unbiased estimator of the causal effect of $W$ provided the conditional distribution of $Y$ given $W$ and $s(W,C)$ is known [@Hirano_2004].
 
-In the GPCERF package, we use a Gaussian process (GP) prior for the conditional distribution of $Y$ given $W$ and $s(W,C)$. This model implicitly performs non-parametric regression of $Y$ on $W$ and $s(W,C)$, and thus we can recover $p(Y|W, s(W,C))$ with high accuracy by using the posterior mean of the model parameters. We assume that the kernel function of the GP is
+In the GPCERF package, we use a Gaussian process (GP) prior for the conditional distribution of $Y$ given $W$ and $s(W,C)$. This model implicitly performs non-parametric regression of $Y$ on $W$ and $s(W,C)$, and thus we can recover $p(Y|W, s(W,C))$ with high accuracy. We then estimate $E(Y(w))$ using the posterior means of $Y$ at different $W$ and $C$. See @Ren_2021_bayesian for more details. We assume that the kernel function of the GP is
 
 $$
 k((w, c),(w', c')) = \gamma^2h(\sqrt{\frac{(s(w, c)-(s(w', c'))^2}{\alpha}+\frac{(w - w')^2}{\beta}}),
@@ -47,7 +49,7 @@ $$
 
 where $h : [0, \infty) \rightarrow [0, 1]$ is a non-increasing function; and $\alpha$ and $\beta$ define the relative importance of GPS and exposure values, respectively. $\gamma$ indicates the scale of the GP. We call the collection $(h, \alpha, \beta, \gamma)$ the hyper-parameters of the GP.
 
-The primary goal in GPCERF is to find appropriate values for the hyper-parameters. In the context of causal inference,  ''appropriate'' values of the hyper-parameters are those that make the estimator of CERF as if it is generated from a study with randomized design. To be more concrete, note that the GP estimates $R(w)$ by creating a pseudo-population that is a weighted version of the original dataset [see more details in @Ren_2021_bayesian]. The weight for each sample in the original dataset is a function of the hyperparameters. By tuning the hyperparameters, we can minimize the sample correlations between $W$ and each component of $C$ in this pseudo-population, rendering the pseduo-population to be more balanced on these covariates $C$. In practice, we minimize the covariate balance, which is a summary of the sample correlations between $W$ and each of $C$ to tune our hyper-parameters. Covaraite balance is computed by assessing the correlation between $W$ and $C$ in the pseudo-population using the _wCorr_ R package [@wCorr_R].
+The primary goal in GPCERF is to find appropriate values for the hyper-parameters. In the context of causal inference,  ''appropriate'' values of the hyper-parameters are those that make the estimator of CERF as if it is generated from a study with randomized design. To be more concrete, note that the GP estimates $R(w)$ by creating a pseudo-population that is a weighted version of the original dataset [see more details in @Ren_2021_bayesian]. The weight for each sample in the original dataset is a function of the hyperparameters. By tuning the hyperparameters, we can minimize the sample correlations between $W$ and each component of $C$ in this pseudo-population, rendering the pseudo-population to be more balanced on these covariates $C$. In practice, we minimize the covariate balance, which is a summary of the sample correlations between $W$ and each of $C$ to tune our hyper-parameters. Covariate balance is computed by assessing the correlation between $W$ and $C$ in the pseudo-population using the _wCorr_ R package [@wCorr_R].
 
 Both GP and nnGP approaches involve two primary steps - tuning and estimation. GPCERF conducts a grid search on the range of provided $\alpha$, $\beta$, and $\gamma/\sigma$. The kernel function is also selected if the user provides multiple candidates. During the tuning step,  covariate balance is minimized by choosing the optimal hyperparameters. 
 
@@ -59,7 +61,7 @@ In the estimation step, the optimal parameters are used to estimate the posterio
 ## Example 1: Standard GP models
 
 To compute the causal exposure response function, one can use the \verb|etimate_cerf_gp()| function. 
-In this example, we generated a synthetic dataset of 500 observations and six covariates. We considered the estimation of $R(w)$ for $w$ that are between 5- and 95-percentiles of the observed exposure levels. We imposed this restriction to make sure that the positivity assumption, which is required for the identifiability of $R(w)$ from the observed data, is not likely to be violated [@Ren_2021_bayesian]. In other words, by confining the exposure level of interest to the aforementioned interval, the probability of being exposed to any of the exposure level should be strictly positive given any arbitrary values of the covariates. We then developed a wrapper function to modify the number of threads in the SuperLearner package [@SuperLearner_R]. We estimated the GPS values using these wrapper functions. One can read more details by running \verb|?GPCERF::estimate_gps| in R. To compute the posterior mean and standard deviation of $R(w)$, we need to provide the range of exposure values of interest and a range of hyperparameters that will be examined as additional input and parameters. The function outputs an \verb|S3| object, which can be further investigated using generic functions, as shown below.
+In this example, we generated a synthetic dataset of 500 observations and six covariates. We considered the estimation of $R(w)$ for $w$ that are between 5- and 95-percentiles of the observed exposure levels. We imposed this restriction to make sure that the positivity assumption, which is required for the identifiability of $R(w)$ from the observed data, is not likely to be violated [@Ren_2021_bayesian]. We then developed a wrapper function to modify the number of threads in the SuperLearner package [@SuperLearner_R; @vander_2007]. We estimated the GPS values using these wrapper functions. One can read more details by running \verb|?GPCERF::estimate_gps| in R. To compute the posterior mean and standard deviation of $R(w)$, we need to provide the range of exposure values of interest and a range of hyperparameters that will be examined as additional input and parameters. The function outputs an \verb|S3| object, which can be further investigated using generic functions, as shown below.
 
 ```r
 library(GPCERF)
@@ -102,6 +104,9 @@ cerf_gp_obj <- estimate_cerf_gp(sim_data,
                                 w_all,
                                 gps_m,
                                 params = params_lst,
+                                outcome_col = "Y",
+                                treatment_col = "treat",
+                                covariates_col = paste0("cf", seq(1,6)),
                                 nthread = 12)
 
 ```
@@ -118,12 +123,12 @@ Optimal hyper parameters(#trial: 300):
   alpha = 12.9154966501488   beta = 12.9154966501488   g_sigma = 0.1
 
 Optimal covariate balance: 
-  cf1 = 0.072 
+  cf1 = 0.069 
   cf2 = 0.082 
-  cf3 = 0.062 
-  cf4 = 0.068 
+  cf3 = 0.063 
+  cf4 = 0.066 
   cf5 = 0.056 
-  cf6 = 0.082
+  cf6 = 0.081
 
 Original covariate balance: 
   cf1 = 0.222 
@@ -132,7 +137,7 @@ Original covariate balance:
   cf4 = 0.318 
   cf5 = 0.198 
   cf6 = 0.257
-            ----***----     
+            ----***----      
 ```
 As one can see, as part of the grid search, 300 different combination of hyper parameters have been tried. \autoref{fig:gp} shows the causal exposure response function and achieved covariate balance in this simulated example.
 
@@ -189,6 +194,9 @@ cerf_nngp_obj <- estimate_cerf_nngp(sim_data,
                                     w_all,
                                     gps_m,
                                     params = params_lst,
+                                    outcome_col = "Y",
+                                    treatment_col = "treat",
+                                    covariates_col = paste0("cf", seq(1,6)),
                                     nthread = 12)
 
 ```
@@ -207,10 +215,10 @@ Optimal hyper parameters(#trial: 300):
   alpha = 0.0278255940220712   beta = 0.215443469003188   g_sigma = 0.1
 
 Optimal covariate balance: 
-  cf1 = 0.058 
-  cf2 = 0.071 
-  cf3 = 0.087 
-  cf4 = 0.066 
+  cf1 = 0.062 
+  cf2 = 0.070 
+  cf3 = 0.091 
+  cf4 = 0.062 
   cf5 = 0.076 
   cf6 = 0.088
 
@@ -221,12 +229,23 @@ Original covariate balance:
   cf4 = 0.296 
   cf5 = 0.208 
   cf6 = 0.225
-            ----***----    
+            ----***----      
 ```
 
 \autoref{fig:nngp} shows the result of `plot(cerf_nngp_obj)` function.
 
 ![Plot of nnGP models S3 object. Left: Estimated CERF with credible band. Right: Covariate balance of confounders before and after weighting with nnGP approach.\label{fig:nngp}](figures/readme_nngp.png){ width=100% }
+
+# Performance analyses of standard and nearest neighbor GP models
+
+The time complexity of the standard Gaussian Process (GP) model is $O(n^3)$, while for the nearest neighbor GP (nnGP) model, it is $O(n * m ^ 3)$, where $m$ is the number of neighbors. An in-depth discussion on achieving these complexities is outside the scope of this paper. Readers interested in further details can refer to @Ren_2021_bayesian. This section focuses on comparing the wall clock time of standard GP and nnGP models in calculating the Conditional Exposure Response Function (CERF) at a specific exposure level, $w$. We set the hyper-parameters to values at $\alpha = \beta = \gamma/\sigma = 1$. \autoref{fig:performance} shows the comparison of standard GP model with nnGP utilizing 50 nearest neighbors. Due to the differing parallelization architectures of the standard GP and nnGP in our package, we conducted this benchmark on a single core. The sample size was varied from 3,000 to 10,000, a range where nnGP begins to demonstrate notable efficiency over the standard GP. We repeat the process 20 times with different seed values. We plotted wall clock time against sample size for both methods. To enhance the visualization of the increasing rate of wall clock time, we applied a log transformation to both axes. For this specific set of analyses the estimated slope of 3.09 (ideally 3) for standard GP aligns with its $O(n^3)$ time complexity. According to the results, a sample size of 10,000 data samples is not large enough to establish a meaningful relationship for the time complexity of the nnGP model effectively.
+
+![Representation of Wall Clock Time (s) vs. Data Samples for Standard GP and nnGP Models. All computations are conducted with $w=1$ and $\alpha = \beta = \gamma/\sigma = 1$. The process is repeated 20 times using various seed values to ensure robustness. A jitter effect is applied to enhance the visibility of data points. Both axes are displayed on log10 scales. The solid lines represent the linear regression modeled as $lm(log10(WC) \textasciitilde log10(n))$. \label{fig:performance}](figures/gp_vs_nngp.png ){ width=80% }
+
+\autoref{fig:performance_nn} compares the performance of the nnGP model across three nearest neighbor categories: 50, 100, and 200, using a data sample sequence ranging from 5,000 to 100,000 with intervals of 5,000. For each category, different sets of runs demonstrate a linear relationship, consistent with an $O(n)$ time complexity, assuming that $m^3$ remains constant for varying sample sizes within each category. 
+
+![Representation of Wall Clock Time (s) vs. Data Samples of the nnGP model across different nearest neighbor categories (50, 100, 200) over a range of data sample sizes from 5,000 to 100,000 in 5,000 increments. . All computations are conducted with $w=1$ and $\alpha = \beta = \gamma/\sigma = 1$. Both axes are displayed on log10 scales. The solid lines represent the linear regression modeled as $lm(log10(WC) \textasciitilde log10(n))$. \label{fig:performance_nn}](figures/nngp_nnsize.png ){ width=80% }
+
 
 # Software related features
 
