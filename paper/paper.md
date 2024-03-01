@@ -16,7 +16,7 @@ authors:
     orcid: 0000-0002-5177-8598
     affiliation: "3"
 affiliations:
- - name: Research Computing, Harvard University, Cambridge, Massachusetts, United States of America
+ - name: University Research Computing and Data Services, Harvard University, Cambridge, Massachusetts, United States of America
    index: 1
  - name: McLean Hospital, Belmont, Massachusetts, United States of America
    index: 2
