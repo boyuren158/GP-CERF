@@ -250,7 +250,7 @@ The time complexity of the standard Gaussian Process (GP) model is $O(n^3)$, whi
 # Software related features
 
 We have implemented several features to enhance the package performance and usability. By utilizing an internal `parallel` package, the software is capable of scaling up in a shared memory system. Additionally, we have implemented a logging infrastructure that tracks the software's internal progress and provides users and developers with detailed information on processed runs [@logger]. We have also activated continuous integration (CI) through GitHub actions, which runs unit tests and checks the code quality for any submitted pull request. The majority of the codebase is tested at least once. To ensure efficient development, we follow a successful git branching model [@driessen_2010] and use the tidyverse styling guide.
-The software is available on CRAN [@gpcerf_cran] and is primarily written in R [@R_2022]. However, some of the core computations are written in C++ using the `Rcpp` package [@rcpp_1; @rcpp_2; @rcpp_3].
+The software is available on CRAN [@gpcerf_cran] and is primarily written in R [@R_2023]. However, some of the core computations are written in C++ using the `Rcpp` package [@rcpp_1; @rcpp_2; @rcpp_3]. All analyses were conducted using R Statistical Software [v4.2.3; @R_2023].
 
 # Acknowledgement
 
