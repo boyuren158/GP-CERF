@@ -7,10 +7,8 @@
 #' for the provided set of hyperparameters.
 #'
 #' @param data A data.frame of observation data.
-#'   - Column 1: Outcome (Y)
-#'   - Column 2: Exposure or treatment (w)
-#'   - Column 3~m: Confounders (C)
-#' @param w A vector of exposure level to compute CERF.
+#' @param w A vector of exposure level to compute CERF (please also see the
+#' notes).
 #' @param gps_m An S3 gps object including:
 #'   gps: A data.frame of GPS vectors.
 #'     - Column 1: GPS
@@ -27,9 +25,24 @@
 #'   - tune_app: A tuning approach. Available approaches:
 #'     - all: try all combinations of hyperparameters.
 #' alpha, beta, and g_sigma can be a vector of parameters.
+#' @param outcome_col An outcome column name in `data`.
+#' @param treatment_col A treatment column name in `data`.
+#' @param covariates_col Covariates columns name in `data`.
 #' @param nthread An integer value that represents the number of threads to be
 #' used by internal packages.
 #' @param kernel_fn A kernel function. A default value is a Gaussian Kernel.
+#'
+#' @note
+#' Please note that `w` is a vector representing a grid of exposure levels at
+#' which the CERF is to be estimated. This grid can include both observed and
+#' hypothetical values of the exposure variable. The purpose of defining this
+#' grid is to provide a structured set of points across the exposure spectrum
+#' for estimating the CERF. This approach is essential in nonparametric models
+#' like Gaussian Processes (GPs), where the CERF is evaluated at specific points
+#' to understand the relationship between the exposure and outcome variables
+#' across a continuum. It facilitates a comprehensive analysis by allowing
+#' practitioners to examine the effect of varying exposure levels, including
+#' those not directly observed in the dataset.
 #'
 #' @return
 #' A cerf_gp object that includes the following values:
@@ -62,11 +75,15 @@
 #'                                               beta=0.2,
 #'                                               g_sigma = 1,
 #'                                               tune_app = "all"),
+#'                                 outcome_col = "Y",
+#'                                 treatment_col = "treat",
+#'                                 covariates_col = paste0("cf", seq(1,6)),
 #'                                 nthread = 1)
 #' }
 #'
-estimate_cerf_gp <- function(data, w, gps_m, params, nthread = 1,
-                             kernel_fn = function(x) exp(-x ^ 2)) {
+estimate_cerf_gp <- function(data, w, gps_m, params,
+                             outcome_col, treatment_col, covariates_col,
+                             nthread = 1, kernel_fn = function(x) exp(-x ^ 2)) {
 
   # Log system info
   log_system_info()
@@ -114,6 +131,31 @@ estimate_cerf_gp <- function(data, w, gps_m, params, nthread = 1,
 
   # TODO: Check values of parameters, too.
 
+  # Collect data ---------------------------------------------------------------
+
+  outcome_data <- data[[outcome_col]]
+  treatment_data <- data[[treatment_col]]
+  covariates_data <- data[, covariates_col, drop=FALSE]
+
+  # Check if outcome_data and treatment_data are vectors
+  is_outcome_vector <- is.vector(outcome_data) &&
+    !is.data.frame(outcome_data)
+
+  is_treatment_vector <- is.vector(treatment_data) &&
+    !is.data.frame(treatment_data)
+  # Check if covariates_data is a data.frame
+  is_covariates_dataframe <- is.data.frame(covariates_data)
+
+  if (!is_outcome_vector) {
+    stop("outcome_data is not a vector.")
+  }
+  if (!is_treatment_vector) {
+    stop("treatment_data is not a vector.")
+  }
+  if (!is_covariates_dataframe) {
+    stop("covariates_data is not a data.frame.")
+  }
+
   # Expand the grid of parameters (alpha, beta, g_sigma) -----------------------
   tune_params <-  expand.grid(getElement(params, "alpha"),
                               getElement(params, "beta"),
@@ -155,7 +197,10 @@ estimate_cerf_gp <- function(data, w, gps_m, params, nthread = 1,
 
     # export variables and functions to cluster cores
     parallel::clusterExport(cl = cl,
-                            varlist = c("w", "data", "gps_m",
+                            varlist = c("w", "outcome_data",
+                                        "treatment_data",
+                                        "covariates_data",
+                                        "gps_m",
                                         "tune_params_subset",
                                         "kernel_fn",
                                         "compute_m_sigma"),
@@ -163,12 +208,15 @@ estimate_cerf_gp <- function(data, w, gps_m, params, nthread = 1,
 
     tune_res <- parallel::parApply(cl, tune_params_subset, 1,
                                    function(x) {
-                                     compute_m_sigma(hyperparam = x,
-                                                     data = data,
-                                                     w = w,
-                                                     gps_m = gps_m,
-                                                     tuning = TRUE,
-                                                     kernel_fn = kernel_fn)
+                                     compute_m_sigma(
+                                       hyperparam = x,
+                                       outcome_data =  outcome_data,
+                                       treatment_data = treatment_data,
+                                       covariates_data = covariates_data,
+                                       w = w,
+                                       gps_m = gps_m,
+                                       tuning = TRUE,
+                                       kernel_fn = kernel_fn)
                                    })
 
     parallel::stopCluster(cl)
@@ -176,15 +224,15 @@ estimate_cerf_gp <- function(data, w, gps_m, params, nthread = 1,
   } else if (nrow(tune_params_subset) > 1) {
     tune_res <- apply(tune_params_subset, 1, function(x) {
       compute_m_sigma(hyperparam = x,
-                      data = data,
+                      outcome_data =  outcome_data,
+                      treatment_data = treatment_data,
+                      covariates_data = covariates_data,
                       w = w,
                       gps_m = gps_m,
                       tuning = TRUE,
                       kernel_fn = kernel_fn)
       })
   }
-
-  logger::log_debug("Number of generated tuning results: {length(tune_res)}")
 
   # Tuning results include:
   # cb: covariate balance for each confounder. This is the average of all
@@ -198,13 +246,16 @@ estimate_cerf_gp <- function(data, w, gps_m, params, nthread = 1,
   # Select the combination of hyperparameters that provides the lowest
   # covariate balance ----------------------------------------------------------
   if (nrow(tune_params_subset) > 1) {
+    logger::log_debug("Number of generated tuning results: {length(tune_res)}")
     opt_idx <- order(sapply(tune_res, function(x) {mean(x$cb)}))[1]
   } else {
     opt_idx <- 1
   }
   opt_param <- tune_params_subset[opt_idx, ]
   gp_cerf_final <- compute_m_sigma(hyperparam = opt_param,
-                                   data = data,
+                                   outcome_data =  outcome_data,
+                                   treatment_data = treatment_data,
+                                   covariates_data = covariates_data,
                                    w = w,
                                    gps_m = gps_m,
                                    tuning = FALSE,

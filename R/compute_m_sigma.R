@@ -10,11 +10,9 @@
 #'   - First element: alpha
 #'   - Second element: beta
 #'   - Third element: g_sigma (gamma / sigma)
-#' @param data A  data.frame containing all data including outcome, exposure
-#' and covariates. In the following order:
-#'   - Column 1: Outcome (Y)
-#'   - Column 2: Exposure or treatment (w)
-#'   - Column 3~m: Confounders (C)
+#' @param outcome_data A  vector of outcome data.
+#' @param treatment_data A vector of treatment data.
+#' @param covariates_data A data frame of covariates data.
 #' @param w A vector of exposure levels at which the CERF is estimated.
 #' @param gps_m An S3 gps object including:
 #'   gps: A data.frame of GPS vectors.
@@ -37,7 +35,8 @@
 #'
 #' @keywords internal
 #'
-compute_m_sigma <- function(hyperparam, data, w, gps_m, tuning,
+compute_m_sigma <- function(hyperparam, outcome_data, treatment_data,
+                            covariates_data, w, gps_m, tuning,
                             kernel_fn = function(x) exp(-x ^ 2)) {
 
   param <- unlist(hyperparam)
@@ -57,7 +56,7 @@ compute_m_sigma <- function(hyperparam, data, w, gps_m, tuning,
   logger::log_trace("Running for tune parameters: ",
                     "alpha: {alpha}, beta: {beta}, g_sigma: {g_sigma} ...")
 
-  w_obs <- data[[2]]
+  w_obs <- treatment_data
 
   #TODO: Following the paper and alpha beta convention, first column should be
   # GPS scaled with alpha, and second column should be w scaled with beta.
@@ -80,7 +79,7 @@ compute_m_sigma <- function(hyperparam, data, w, gps_m, tuning,
 
   # Estimate noise
   if (!tuning) {
-    noise_est <- estimate_noise_gp(data = data,
+    noise_est <- estimate_noise_gp(data = outcome_data,
                                    sigma_obs = sigma_obs,
                                    inv_sigma_obs = inv_sigma_obs)
     logger::log_debug("Estimated noise: {noise_est} ")
@@ -112,7 +111,7 @@ compute_m_sigma <- function(hyperparam, data, w, gps_m, tuning,
     # est is the same as m in the paper.
 
     if (!tuning) {
-      est <- data$Y %*% weights_final
+      est <- outcome_data %*% weights_final
       pst_sd <- noise_est * weights_res$sd_scaled
       logger::log_trace("Posterior for w = {w_instance} ==> ",
                         "mu: {est}, var:{pst_sd}")
@@ -120,8 +119,8 @@ compute_m_sigma <- function(hyperparam, data, w, gps_m, tuning,
       est <- NA
       pst_sd <- NA
     }
-    cov_balance_obj <- compute_w_corr(w = data[[2]],
-                                      covariate = data[, 3:ncol(data)],
+    cov_balance_obj <- compute_w_corr(w = treatment_data,
+                                      covariate = covariates_data,
                                       weight = weights_final)
     covariate_balance <- as.vector(cov_balance_obj$absolute_corr)
     c(covariate_balance, est, pst_sd)
@@ -141,17 +140,28 @@ compute_m_sigma <- function(hyperparam, data, w, gps_m, tuning,
 
   # compute original covariate balance of data
   if (!tuning) {
-    cov_balance_obj_org <- compute_w_corr(w = data[[2]],
-                                          covariate = data[, 3:ncol(data)],
-                                          weight = rep(1, nrow(data)))
+    cov_balance_obj_org <- compute_w_corr(w = treatment_data,
+                                          covariate = covariates_data,
+                                          weight = rep(1, nrow(covariates_data)))
     cb_org <- cov_balance_obj_org$absolute_corr
   } else {
     cb_org <- NA
   }
 
+  if (!is.matrix(col_all)){
+    # in case of one covariate col_all returns vector instead of matrix
+    row_name <- names(col_all)[1]
+    col_all <- matrix(col_all, nrow = 1)
+    rownames(col_all) <- row_name
+  }
 
-  col_all_w_average <- rowMeans(col_all, na.rm = TRUE)
 
+  if (nrow(col_all) == 1){
+    col_all_w_average <- mean(col_all, na.rm = TRUE)
+    names(col_all_w_average) <- rownames(col_all)
+  } else {
+    col_all_w_average <- rowMeans(col_all, na.rm = TRUE)
+  }
 
   list(cb = col_all_w_average,
        cb_org = cb_org,

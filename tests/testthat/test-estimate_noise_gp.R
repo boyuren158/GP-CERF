@@ -28,7 +28,7 @@ test_that("estimate_noise_gp works as expected", {
                diag(nrow(scaled_obs))
   inv_sigma_obs <- compute_inverse(sigma_obs)
 
-  noise_est <- estimate_noise_gp(data = data,
+  noise_est <- estimate_noise_gp(data = data$Y,
                                  sigma_obs = sigma_obs,
                                  inv_sigma_obs = inv_sigma_obs)
 

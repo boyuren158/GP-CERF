@@ -8,12 +8,7 @@ process}
 estimate_noise_gp(data, sigma_obs, inv_sigma_obs)
 }
 \arguments{
-\item{data}{A data.frame of observation data.
-\itemize{
-\item Column 1: Outcome (Y)
-\item Column 2: Exposure or treatment (w)
-\item Column 3~m: Confounders (C)
-}}
+\item{data}{A vector of outcome data.}
 
 \item{sigma_obs}{Covariance matrix between observed covariates.}
 

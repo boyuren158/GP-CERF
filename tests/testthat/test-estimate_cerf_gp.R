@@ -19,6 +19,9 @@ test_that("estimate_cerf_gp works as expected!", {
                                                 beta = 0.2,
                                                 g_sigma = 1,
                                                 tune_app = "all"),
+                                  outcome_col = "Y",
+                                  treatment_col = "treat",
+                                  covariates_col = paste0("cf", seq(1,6)),
                                   nthread = 1)
 
 
@@ -50,6 +53,9 @@ test_that("estimate_cerf_gp works as expected!", {
                                                 beta = 0.2,
                                                 g_sigma = 1,
                                                 tune_app = "all"),
+                                  outcome_col = "Y",
+                                  treatment_col = "treat",
+                                  covariates_col = paste0("cf", seq(1,6)),
                                   nthread = 1))
 
   # Check input parameters -----------------------------------------------------
@@ -73,6 +79,9 @@ test_that("estimate_cerf_gp works as expected!", {
                                                 beta = 0.2,
                                                 g_sigma = 1,
                                                 tune_app = "all"),
+                                  outcome_col = "Y",
+                                  treatment_col = "treat",
+                                  covariates_col = paste0("cf", seq(1,6)),
                                   nthread = 1))
 
   expect_error(cerf_gp_obj <- estimate_cerf_gp(
@@ -83,6 +92,9 @@ test_that("estimate_cerf_gp works as expected!", {
                                                 beta = 0.2,
                                                 g_sigma = 1,
                                                 tune_app = "all"),
+                                  outcome_col = "Y",
+                                  treatment_col = "treat",
+                                  covariates_col = paste0("cf", seq(1,6)),
                                   nthread = 1))
 
 
@@ -94,6 +106,9 @@ test_that("estimate_cerf_gp works as expected!", {
                                                 beta = 0.2,
                                                 ggggg_sigma = 1,
                                                 tune_app = "all"),
+                                  outcome_col = "Y",
+                                  treatment_col = "treat",
+                                  covariates_col = paste0("cf", seq(1,6)),
                                   nthread = 1))
 
   expect_error(cerf_gp_obj <- estimate_cerf_gp(
@@ -104,6 +119,9 @@ test_that("estimate_cerf_gp works as expected!", {
                                                 beta = c(),
                                                 g_sigma = ,
                                                 tune_app = "all"),
+                                  outcome_col = "Y",
+                                  treatment_col = "treat",
+                                  covariates_col = paste0("cf", seq(1,6)),
                                   nthread = 1))
 
 
@@ -115,6 +133,9 @@ test_that("estimate_cerf_gp works as expected!", {
                                                 beta = 0.2,
                                                 g_sigma = 1,
                                                 tune_app = "at_random"),
+                                  outcome_col = "Y",
+                                  treatment_col = "treat",
+                                  covariates_col = paste0("cf", seq(1,6)),
                                   nthread = 1))
 
   expect_error(cerf_gp_obj <- estimate_cerf_gp(
@@ -125,6 +146,9 @@ test_that("estimate_cerf_gp works as expected!", {
                                                 beta = 0.2,
                                                 g_sigma = 1,
                                                 tune_app = "xyz"),
+                                  outcome_col = "Y",
+                                  treatment_col = "treat",
+                                  covariates_col = paste0("cf", seq(1,6)),
                                   nthread = 1))
 
   # check for data with missing values
@@ -139,6 +163,9 @@ test_that("estimate_cerf_gp works as expected!", {
                                                 beta = 0.2,
                                                 g_sigma = 1,
                                                 tune_app = "all"),
+                                  outcome_col = "Y",
+                                  treatment_col = "treat",
+                                  covariates_col = paste0("cf", seq(1,6)),
                                   nthread = 1))
 
 
@@ -163,6 +190,9 @@ test_that("estimate_cerf_gp works as expected!", {
                                                  beta = 0.2,
                                                  g_sigma = 1,
                                                  tune_app = "all"),
+                                   outcome_col = "Y",
+                                   treatment_col = "treat",
+                                   covariates_col = paste0("cf", seq(1,6)),
                                    nthread = 2)
 
   expect_s3_class(cerf_gp_obj_2, "cerf_gp")

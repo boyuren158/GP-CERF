@@ -106,6 +106,9 @@ gp_res_normal <- estimate_cerf_gp(data_sim_normal,
                                                 beta = 0.2,
                                                 g_sigma = 1,
                                                 tune_app = "all"),
+                                  outcome_col = "Y",
+                                  treatment_col = "treat",
+                                  covariates_col = paste0("cf", seq(1,6)),
                                   nthread = 1)
 plot_fun(gp_res_normal) +
   geom_line(data = data.frame(w = w_all, y = erf_tru_normal),
@@ -124,6 +127,9 @@ gp_res_t <- estimate_cerf_gp(data_sim_t,
                                            beta = 0.2,
                                            g_sigma = 1,
                                            tune_app = "all"),
+                             outcome_col = "Y",
+                             treatment_col = "treat",
+                             covariates_col = paste0("cf", seq(1,6)),
                              nthread = 1)
 plot_fun(gp_res_t) +
   geom_line(data = data.frame(w = w_all, y = erf_tru_t),

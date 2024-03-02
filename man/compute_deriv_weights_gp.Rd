@@ -25,7 +25,7 @@ gps: A data.frame of GPS vectors.
 (e_gps_pred).
 - Column 3: Standard deviation of  e_gps (e_gps_std)
 used_params:
-- dnorm_log: TRUE or FLASE}
+- dnorm_log: TRUE or FALSE}
 
 \item{hyperparam}{A vector of hyper-parameters in the GP model.}
 

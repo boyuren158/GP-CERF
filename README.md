@@ -19,6 +19,8 @@ library("GPCERF")
 
 ## Usage
 
+_Note:_ The following examples will also need installing `ranger` R package. 
+
 ### GP
 
 ```r
@@ -57,6 +59,9 @@ cerf_gp_obj <- estimate_cerf_gp(sim_data,
                                 w_all,
                                 gps_m,
                                 params = params_lst,
+                                outcome_col = "Y",
+                                treatment_col = "treat",
+                                covariates_col = paste0("cf", seq(1,6)),
                                 nthread = n_core)
 summary(cerf_gp_obj)
 plot(cerf_gp_obj)
@@ -68,12 +73,12 @@ Optimal hyper parameters(#trial: 300):
   alpha = 12.9154966501488   beta = 12.9154966501488   g_sigma = 0.1
 
 Optimal covariate balance: 
-  cf1 = 0.072 
+  cf1 = 0.069 
   cf2 = 0.082 
-  cf3 = 0.062 
-  cf4 = 0.068 
+  cf3 = 0.063 
+  cf4 = 0.066 
   cf5 = 0.056 
-  cf6 = 0.082
+  cf6 = 0.081
 
 Original covariate balance: 
   cf1 = 0.222 
@@ -82,7 +87,7 @@ Original covariate balance:
   cf4 = 0.318 
   cf5 = 0.198 
   cf6 = 0.257
-            ----***----       
+            ----***----      
 ```
 
 <p>
@@ -128,6 +133,9 @@ cerf_nngp_obj <- estimate_cerf_nngp(sim_data,
                                     w_all,
                                     gps_m,
                                     params = params_lst,
+                                    outcome_col = "Y",
+                                    treatment_col = "treat",
+                                    covariates_col = paste0("cf", seq(1,6)),
                                     nthread = 12)
 summary(cerf_nngp_obj)
 plot(cerf_nngp_obj)
@@ -140,10 +148,10 @@ Optimal hyper parameters(#trial: 300):
   alpha = 0.0278255940220712   beta = 0.215443469003188   g_sigma = 0.1
 
 Optimal covariate balance: 
-  cf1 = 0.058 
-  cf2 = 0.071 
-  cf3 = 0.087 
-  cf4 = 0.066 
+  cf1 = 0.062 
+  cf2 = 0.070 
+  cf3 = 0.091 
+  cf4 = 0.062 
   cf5 = 0.076 
   cf6 = 0.088
 
@@ -154,12 +162,21 @@ Original covariate balance:
   cf4 = 0.296 
   cf5 = 0.208 
   cf6 = 0.225
-            ----***----                    
+            ----***----                       
 ```
 
 <p>
 <img src="man/figures/png/readme_nngp.png" width="900">
 </p>
+
+## Code of Conduct
+
+Please note that the GPCERF project is released with a [Contributor Code of Conduct](https://www.contributor-covenant.org/version/2/1/code_of_conduct). By contributing to this project, you agree to abide by its terms.
+
+
+## Reporting Issues & Seeking Support
+
+If you encounter any issues with GPCERF, we kindly ask you to report them on our GitHub by opening a new issue. To expedite resolution, including a reproducible example is highly appreciated. For those seeking assistance or further details about a particular topic, feel free to initiate a Discussion on GitHub or open an issue. Additionally, for more direct inquiries, the package maintainer can be reached via the email address provided in the DESCRIPTION file.
 
 ## References
 

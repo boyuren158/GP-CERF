@@ -11,8 +11,15 @@ test_that("compute_m_sigma works as expected!", {
                          sl_lib = c("SL.xgboost"),
                          dnorm_log = FALSE)
 
+   outcome_data <- data[["Y"]]
+   treatment_data <- data[["treat"]]
+   covariates_data <- data[, paste0("cf", seq(1,6)), drop=FALSE]
+
+
    tune_res <- compute_m_sigma(hyperparam = c(0.09, 0.09, 10),
-                               data = data,
+                               outcome_data = outcome_data,
+                               treatment_data = treatment_data,
+                               covariates_data = covariates_data,
                                w = w_all,
                                gps_m = gps_m,
                                tuning = FALSE)
@@ -25,7 +32,9 @@ test_that("compute_m_sigma works as expected!", {
    expect_equal(gp_cerf[10], 2.105425, tolerance = 0.000001)
 
    tune_res_t <- compute_m_sigma(hyperparam = c(0.09, 0.09, 10),
-                                 data = data,
+                                 outcome_data = outcome_data,
+                                 treatment_data = treatment_data,
+                                 covariates_data = covariates_data,
                                  w = w_all,
                                  gps_m = gps_m,
                                  tuning = TRUE)

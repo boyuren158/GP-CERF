@@ -93,6 +93,9 @@ cerf_gp_obj <- estimate_cerf_gp(sim_data,
                                w_all,
                                gps_m,
                                params = params_lst,
+                               outcome_col = "Y",
+                               treatment_col = "treat",
+                               covariates_col = paste0("cf", seq(1,6)),
                                nthread = 1)
 summary(cerf_gp_obj)
 plot(cerf_gp_obj)
@@ -103,9 +106,6 @@ plot(cerf_gp_obj)
 Input parameters:
 
 **`data`** A data.frame of observation data.   
-  - Column 1: Outcome (Y)   
-  - Column 2: Exposure or treatment (w)   
-  - Column 3~m: Confounders (C)   
 **`w`** A vector of exposure level to compute CERF.   
 **`gps_m`** A data.frame of GPS vectors.   
   - Column 1: GPS   
@@ -121,6 +121,10 @@ Input parameters:
   - block_size: Number of samples included in a computation block. Mainly used to balance speed and memory requirement. Larger \code{block_size} is faster, but requires more memory.    
 
 alpha, beta, and g_sigma can be a vector of parameters. 
+
+**`outcome_col`** An outcome column name in `data`.
+**`treatment_col`** A treatment column name in `data`.
+**`covariates_col`** Covariates columns name in `data`.
 
 **`nthread`** An integer value that represents the number of threads to be used in a shared memory system.    
 **`kernel_fn`** A kernel function. A default value is a Gaussian kernel.    
@@ -150,6 +154,9 @@ cerf_nngp_obj <- estimate_cerf_nngp(sim_data,
                                     w_all,
                                     gps_m,
                                     params = params_lst,
+                                    outcome_col = "Y",
+                                    treatment_col = "treat",
+                                    covariates_col = paste0("cf", seq(1,6)),
                                     nthread = 1)
 
 summary(cerf_nngp_obj)

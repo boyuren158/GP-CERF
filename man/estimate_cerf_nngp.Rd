@@ -10,19 +10,18 @@ estimate_cerf_nngp(
   w,
   gps_m,
   params,
+  outcome_col,
+  treatment_col,
+  covariates_col,
   kernel_fn = function(x) exp(-x^2),
   nthread = 1
 )
 }
 \arguments{
-\item{data}{A data.frame of observation data.
-\itemize{
-\item Column 1: Outcome (Y)
-\item Column 2: Exposure or treatment (w)
-\item Column 3~m: Confounders (C)
-}}
+\item{data}{A data.frame of observation data.}
 
-\item{w}{A vector of exposure level to compute CERF.}
+\item{w}{A vector of exposure level to compute CERF (please also see the
+notes).}
 
 \item{gps_m}{An S3 gps object including:
 gps: A data.frame of GPS vectors.
@@ -50,6 +49,12 @@ is faster, but requires more memory.
 alpha, beta, and g_sigma can be a vector of parameters.
 }}
 
+\item{outcome_col}{An outcome column name in \code{data}.}
+
+\item{treatment_col}{A treatment column name in \code{data}.}
+
+\item{covariates_col}{Covariates columns name in \code{data}.}
+
 \item{kernel_fn}{A kernel function. A default value is a Gaussian Kernel.}
 
 \item{nthread}{An integer value that represents the number of threads to be
@@ -67,6 +72,18 @@ A cerf_nngp object that includes the following values:
 Estimates the conditional exposure response function (cerf) using
 the nearest neighbor (nn) Gaussian Process (gp). The function tune the best
 match (the lowest covariate balance) for the provided set of hyperparameters.
+}
+\note{
+Please note that \code{w} is a vector representing a grid of exposure levels at
+which the CERF is to be estimated. This grid can include both observed and
+hypothetical values of the exposure variable. The purpose of defining this
+grid is to provide a structured set of points across the exposure spectrum
+for estimating the CERF. This approach is essential in nonparametric models
+like Gaussian Processes (GPs), where the CERF is evaluated at specific points
+to understand the relationship between the exposure and outcome variables
+across a continuum. It facilitates a comprehensive analysis by allowing
+practitioners to examine the effect of varying exposure levels, including
+those not directly observed in the dataset.
 }
 \examples{
 
@@ -89,6 +106,9 @@ cerf_nngp_obj <- estimate_cerf_nngp(data,
                                                   tune_app = "all",
                                                   n_neighbor = 20,
                                                   block_size = 1e4),
+                                    outcome_col = "Y",
+                                    treatment_col = "treat",
+                                    covariates_col = paste0("cf", seq(1,6)),
                                     nthread = 1)
 }
 

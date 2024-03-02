@@ -7,7 +7,9 @@ process (GP)}
 \usage{
 compute_m_sigma(
   hyperparam,
-  data,
+  outcome_data,
+  treatment_data,
+  covariates_data,
   w,
   gps_m,
   tuning,
@@ -22,13 +24,11 @@ compute_m_sigma(
 \item Third element: g_sigma (gamma / sigma)
 }}
 
-\item{data}{A  data.frame containing all data including outcome, exposure
-and covariates. In the following order:
-\itemize{
-\item Column 1: Outcome (Y)
-\item Column 2: Exposure or treatment (w)
-\item Column 3~m: Confounders (C)
-}}
+\item{outcome_data}{A  vector of outcome data.}
+
+\item{treatment_data}{A vector of treatment data.}
+
+\item{covariates_data}{A data frame of covariates data.}
 
 \item{w}{A vector of exposure levels at which the CERF is estimated.}
 

@@ -19,7 +19,10 @@ test_that("estimate_cerf_nngp works as expected!", {
                                                     g_sigma = 1,
                                                     tune_app = "all",
                                                     n_neighbor = 20,
-                                                    block_size = 1e4))
+                                                    block_size = 1e4),
+                                      outcome_col = "Y",
+                                      treatment_col = "treat",
+                                      covariates_col = paste0("cf", seq(1,6)))
 
   expect_error(estimate_cerf_nngp(data,
                                   w_all,
@@ -29,7 +32,10 @@ test_that("estimate_cerf_nngp works as expected!", {
                                                 g_sigma = 1,
                                                 tune_app = "at_random",
                                                 n_neighbor = 20,
-                                                block_size = 1e4)))
+                                                block_size = 1e4),
+                                  outcome_col = "Y",
+                                  treatment_col = "treat",
+                                  covariates_col = paste0("cf", seq(1,6))))
 
   expect_error(estimate_cerf_nngp(data,
                                   w_all,
@@ -39,7 +45,10 @@ test_that("estimate_cerf_nngp works as expected!", {
                                                 g_sigma = 1,
                                                 tune_app = "abc",
                                                 n_neighbor = 20,
-                                                block_size = 1e4)))
+                                                block_size = 1e4),
+                                  outcome_col = "Y",
+                                  treatment_col = "treat",
+                                  covariates_col = paste0("cf", seq(1,6))))
 
   expect_s3_class(cerf_nngp_obj, "cerf_nngp")
 
@@ -58,7 +67,10 @@ test_that("estimate_cerf_nngp works as expected!", {
                                                 g_sigma = 1,
                                                 tune_app = "all",
                                                 n_neighbor = 20,
-                                                block_size = 1e4)))
+                                                block_size = 1e4),
+                                  outcome_col = "Y",
+                                  treatment_col = "treat",
+                                  covariates_col = paste0("cf", seq(1,6))))
 
   # Check non-consistent data and GPS object. ----------------------------------
   # Different size
@@ -82,7 +94,10 @@ test_that("estimate_cerf_nngp works as expected!", {
                                                 g_sigma = 1,
                                                 tune_app = "all",
                                                 n_neighbor = 20,
-                                                block_size = 1e4)))
+                                                block_size = 1e4),
+                                  outcome_col = "Y",
+                                  treatment_col = "treat",
+                                  covariates_col = paste0("cf", seq(1,6))))
 
   # Same size but different exposure values
   gps_mx <- gps_m
@@ -96,5 +111,8 @@ test_that("estimate_cerf_nngp works as expected!", {
                                                 g_sigma = 1,
                                                 tune_app = "all",
                                                 n_neighbor = 20,
-                                                block_size = 1e4)))
+                                                block_size = 1e4),
+                                  outcome_col = "Y",
+                                  treatment_col = "treat",
+                                  covariates_col = paste0("cf", seq(1,6))))
 })

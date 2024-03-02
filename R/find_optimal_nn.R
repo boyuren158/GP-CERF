@@ -73,9 +73,11 @@ find_optimal_nn <- function(w_obs, w, y_obs, gps_m, design_mt,
                             varlist = c("hyperparam"),
                             envir = environment())
 
+
     all_res_list <- parallel::parLapply(cl,
                                         w,
                                         function(wi) {
+
       # Estimate GPS for requested w.
       gps_w <- dnorm(wi,
                      mean = gps_m$gps$e_gps_pred,
@@ -94,7 +96,7 @@ find_optimal_nn <- function(w_obs, w, y_obs, gps_m, design_mt,
       idx <- res[-nrow(res), 1]
       weights <- res[-nrow(res), 2]
       cb_obj <- compute_w_corr(w = coord_obs[idx, 1],
-                               covariate = design_mt[idx, ],
+                               covariate = design_mt[idx, ,drop=FALSE],
                                weight = weights)
       cb <- cb_obj$absolute_corr
       list(cb = cb, est = res[nrow(res), 2])

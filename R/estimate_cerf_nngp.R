@@ -8,11 +8,8 @@
 #' match (the lowest covariate balance) for the provided set of hyperparameters.
 #'
 #' @param data A data.frame of observation data.
-#'   - Column 1: Outcome (Y)
-#'   - Column 2: Exposure or treatment (w)
-#'   - Column 3~m: Confounders (C)
-#'
-#' @param w A vector of exposure level to compute CERF.
+#' @param w A vector of exposure level to compute CERF (please also see the
+#' notes).
 #' @param gps_m An S3 gps object including:
 #'   gps: A data.frame of GPS vectors.
 #'     - Column 1: GPS
@@ -33,9 +30,24 @@
 #'   used to balance the speed and memory requirement. Larger \code{block_size}
 #'   is faster, but requires more memory.
 #' alpha, beta, and g_sigma can be a vector of parameters.
+#' @param outcome_col An outcome column name in `data`.
+#' @param treatment_col A treatment column name in `data`.
+#' @param covariates_col Covariates columns name in `data`.
 #' @param kernel_fn A kernel function. A default value is a Gaussian Kernel.
 #' @param nthread An integer value that represents the number of threads to be
 #' used by internal packages.
+#'
+#' @note
+#' Please note that `w` is a vector representing a grid of exposure levels at
+#' which the CERF is to be estimated. This grid can include both observed and
+#' hypothetical values of the exposure variable. The purpose of defining this
+#' grid is to provide a structured set of points across the exposure spectrum
+#' for estimating the CERF. This approach is essential in nonparametric models
+#' like Gaussian Processes (GPs), where the CERF is evaluated at specific points
+#' to understand the relationship between the exposure and outcome variables
+#' across a continuum. It facilitates a comprehensive analysis by allowing
+#' practitioners to examine the effect of varying exposure levels, including
+#' those not directly observed in the dataset.
 #'
 #' @return
 #' A cerf_nngp object that includes the following values:
@@ -66,10 +78,14 @@
 #'                                                   tune_app = "all",
 #'                                                   n_neighbor = 20,
 #'                                                   block_size = 1e4),
+#'                                     outcome_col = "Y",
+#'                                     treatment_col = "treat",
+#'                                     covariates_col = paste0("cf", seq(1,6)),
 #'                                     nthread = 1)
 #'}
 #'
 estimate_cerf_nngp <- function(data, w, gps_m, params,
+                               outcome_col, treatment_col, covariates_col,
                                kernel_fn = function(x) exp(-x ^ 2),
                                nthread = 1) {
 
@@ -110,16 +126,39 @@ estimate_cerf_nngp <- function(data, w, gps_m, params,
                 "Current sizes: ", nrow(data), " vs ", length(gps_m$gps$w)))
   }
 
-
   # TODO: Check values of parameters, too.
 
   # Order data based on w ------------------------------------------------------
-  data <- data[order(data[, c(2)]), ]
+  data <- data[order(data[[treatment_col]]), ]
   gps_m$gps <- gps_m$gps[order(gps_m$gps$w), ]
 
-  if (!all.equal(data[, c(2)], gps_m$gps$w, tolerance = 0.00001)) {
+  if (!all.equal(data[[treatment_col]], gps_m$gps$w, tolerance = 0.00001)) {
     stop(paste0("Provided GPS object and data object have different",
                 " exposure values."))
+  }
+
+  # Collect data ---------------------------------------------------------------
+  outcome_data <- data[[outcome_col]]
+  treatment_data <- data[[treatment_col]]
+  covariates_data <- data[, covariates_col, drop=FALSE]
+
+  # Check if outcome_data and treatment_data are vectors
+  is_outcome_vector <- is.vector(outcome_data) &&
+                       !is.data.frame(outcome_data)
+
+  is_treatment_vector <- is.vector(treatment_data) &&
+                       !is.data.frame(treatment_data)
+  # Check if covariates_data is a data.frame
+  is_covariates_dataframe <- is.data.frame(covariates_data)
+
+  if (!is_outcome_vector) {
+    stop("outcome_data is not a vector.")
+  }
+  if (!is_treatment_vector) {
+    stop("treatment_data is not a vector.")
+  }
+  if (!is_covariates_dataframe) {
+    stop("covariates_data is not a data.frame.")
   }
 
   # Expand the grid of parameters (alpha, beta, g_sigma) -----------------------
@@ -153,11 +192,11 @@ estimate_cerf_nngp <- function(data, w, gps_m, params,
   block_size <- getElement(params, "block_size")
 
   # Search for the best set of parameters --------------------------------------
-  optimal_cb_res <- find_optimal_nn(w_obs = data[, c(2)],
+  optimal_cb_res <- find_optimal_nn(w_obs = treatment_data,
                                     w = w,
-                                    y_obs = data[, c(1)],
+                                    y_obs = outcome_data,
                                     gps_m = gps_m,
-                                    design_mt = data[, 3:ncol(data)],
+                                    design_mt = covariates_data,
                                     hyperparams = tune_params_subset,
                                     n_neighbor = n_neighbor,
                                     kernel_fn = kernel_fn,
@@ -166,15 +205,28 @@ estimate_cerf_nngp <- function(data, w, gps_m, params,
 
   # Extract the optimum hyperparameters
   all_cb_res <- sapply(optimal_cb_res, "[[", "cb")
-  opt_idx_nn <- order(colMeans(abs(all_cb_res)))[1]
+
+  if (!is.matrix(all_cb_res)){
+    # in case of one covariate col_all returns vector instead of matrix
+    row_name <- names(all_cb_res)[1]
+    all_cb_res <- matrix(all_cb_res, nrow = 1)
+    rownames(all_cb_res) <- row_name
+  }
+
+  if (nrow(all_cb_res) == 1){
+    opt_idx_nn <- order(abs(all_cb_res))[1]
+  } else {
+    opt_idx_nn <- order(colMeans(abs(all_cb_res)))[1]
+  }
+
   posterior_mean <- optimal_cb_res[[opt_idx_nn]]$est
   nn_opt_param <- unlist(tune_params_subset[opt_idx_nn, ])
 
   # Estimate noise -------------------------------------------------------------
   noise_nn <- estimate_noise_nn(hyperparam = nn_opt_param,
-                                w_obs = data[, c(2)],
+                                w_obs = treatment_data,
                                 GPS_obs = gps_m$gps$gps,
-                                y_obs = data[, c(1)],
+                                y_obs = outcome_data,
                                 kernel_fn = kernel_fn,
                                 n_neighbor = n_neighbor,
                                 nthread = nthread)
@@ -182,9 +234,9 @@ estimate_cerf_nngp <- function(data, w, gps_m, params,
   # Compute posterior mean and standard deviation ------------------------------
   posterior_vals <- estimate_mean_sd_nn(hyperparam = nn_opt_param,
                                         sigma2 = noise_nn ^ 2,
-                                        w_obs = data[, c(2)],
+                                        w_obs = treatment_data,
                                         w = w,
-                                        y_obs = data[, c(1)],
+                                        y_obs = outcome_data,
                                         gps_m = gps_m,
                                         kernel_fn = kernel_fn,
                                         n_neighbor = n_neighbor,
@@ -198,8 +250,8 @@ estimate_cerf_nngp <- function(data, w, gps_m, params,
                    "Wall clock time: {t_nngp_2[[3]] - t_nngp_1[[3]]} s.")
 
   # Compute covariate balance for original data --------------------------------
-  cov_balance_obj_org <- compute_w_corr(w = data[[2]],
-                                        covariate = data[, 3:ncol(data)],
+  cov_balance_obj_org <- compute_w_corr(w = treatment_data,
+                                        covariate = covariates_data,
                                         weight = rep(1, nrow(data)))
   cb_org <- cov_balance_obj_org$absolute_corr
 
