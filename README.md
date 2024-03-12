@@ -173,6 +173,10 @@ Original covariate balance:
 
 Please note that the GPCERF project is released with a [Contributor Code of Conduct](https://www.contributor-covenant.org/version/2/1/code_of_conduct). By contributing to this project, you agree to abide by its terms.
 
+## Contributing
+
+Contributions to the package are encouraged. For detailed information on how to contribute, please refer to the [CONTRIBUTING](CONTRIBUTING.md) guidelines.
+
 
 ## Reporting Issues & Seeking Support
 
