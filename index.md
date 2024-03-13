@@ -5,7 +5,7 @@
 [![R build status](https://github.com/NSAPH-Software/GPCERF/workflows/R-CMD-check/badge.svg)](https://github.com/NSAPH-Software/GPCERF/actions)
 [![codecov](https://codecov.io/gh/NSAPH-Software/GPCERF/branch/develop/graph/badge.svg?token=066ISL822N)](https://app.codecov.io/gh/NSAPH-Software/GPCERF)
 [![CRAN RStudio mirror downloads](https://cranlogs.r-pkg.org/badges/grand-total/GPCERF)](http://www.r-pkg.org/pkg/gpcerf)
-[![Github issues](https://img.shields.io/github/issues/nsaph-software/GPCERF)](https://github.com/NSAPH-Software/GPCERF/issues)
+[![GitHub issues](https://img.shields.io/github/issues/nsaph-software/GPCERF)](https://github.com/NSAPH-Software/GPCERF/issues)
 <!-- badges: end -->
  
 

@@ -14,7 +14,7 @@ for the provided set of hyperparameters."><!-- mathjax --><script src="https://c
     
     <a class="navbar-brand me-2" href="../index.html">GPCERF</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.1.9000</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.3</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -92,7 +92,8 @@ for the provided set of hyperparameters.</p>
 
 
 <dt>w</dt>
-<dd><p>A vector of exposure level to compute CERF.</p></dd>
+<dd><p>A vector of exposure level to compute CERF (please also see the
+notes).</p></dd>
 
 
 <dt>gps_m</dt>
@@ -146,6 +147,19 @@ used by internal packages.</p></dd>
 <li><p>pst_mean, Computed mean for the w vector.</p></li>
 <li><p>pst_sd, Computed credible interval for the w vector.</p></li>
 </ul></div>
+    <div class="section level2">
+    <h2 id="note">Note<a class="anchor" aria-label="anchor" href="#note"></a></h2>
+    <p>Please note that <code>w</code> is a vector representing a grid of exposure levels at
+which the CERF is to be estimated. This grid can include both observed and
+hypothetical values of the exposure variable. The purpose of defining this
+grid is to provide a structured set of points across the exposure spectrum
+for estimating the CERF. This approach is essential in nonparametric models
+like Gaussian Processes (GPs), where the CERF is evaluated at specific points
+to understand the relationship between the exposure and outcome variables
+across a continuum. It facilitates a comprehensive analysis by allowing
+practitioners to examine the effect of varying exposure levels, including
+those not directly observed in the dataset.</p>
+    </div>
 
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>

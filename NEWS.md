@@ -1,4 +1,4 @@
-# GPCERF (developing)
+# GPCERF 0.2.3 (2024-03-02)
 
 ## Changed
 

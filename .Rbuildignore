@@ -22,3 +22,5 @@ index.md
 ^CRAN-SUBMISSION$
 ^CODE_OF_CONDUCT\.md$
 ^paper/*$
+^CONTRIBUTING\.md$
+^CITATION\.cff$

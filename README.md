@@ -1,7 +1,26 @@
-| Resource    |  Github Actions      |  Code Coverage  |
-| ----------  | -------------------- | --------------- |
-| Platforms   | Windows, macOS, Linux|    codecov      |
-| R CMD check | [![R build status](https://github.com/NSAPH-Software/GPCERF/workflows/R-CMD-check/badge.svg)](https://github.com/NSAPH-Software/GPCERF/actions) | [![codecov](https://codecov.io/gh/NSAPH-Software/GPCERF/branch/develop/graph/badge.svg?token=066ISL822N)](https://app.codecov.io/gh/NSAPH-Software/GPCERF) |
+<p align="center">
+  <img src="man/figures/png/gpcerf_logo.png" height="100" alt="Cover Image"/>
+</p>
+
+<div align="center">
+    <a href="https://CRAN.R-project.org/package=GPCERF">
+        <img src="https://www.r-pkg.org/badges/version-last-release/GPCERF" alt="CRAN Package Version">
+    </a>
+    <a href="https://joss.theoj.org/papers/10.21105/joss.05465">
+        <img src="https://joss.theoj.org/papers/10.21105/joss.05465/status.svg" alt="JOSS Status">
+    </a>
+    <a href="https://github.com/NSAPH-Software/GPCERF/actions">
+        <img src="https://github.com/NSAPH-Software/GPCERF/workflows/R-CMD-check/badge.svg", alt="R-CMD-check status">
+    </a>
+    <a href="https://app.codecov.io/gh/NSAPH-Software/GPCERF">
+        <img src="https://codecov.io/gh/NSAPH-Software/GPCERF/branch/develop/graph/badge.svg?token=066ISL822N", alt="Codecov">
+    </a>
+    <a href="http://www.r-pkg.org/pkg/GPCERF">
+        <img src="https://cranlogs.r-pkg.org/badges/grand-total/GPCERF" alt="CRAN RStudio Mirror Downloads">
+    </a>
+</div>
+
+
 
 
 # Gaussian processes for the estimation of causal exposure-response curves (GP-CERF)
@@ -172,6 +191,10 @@ Original covariate balance:
 ## Code of Conduct
 
 Please note that the GPCERF project is released with a [Contributor Code of Conduct](https://www.contributor-covenant.org/version/2/1/code_of_conduct). By contributing to this project, you agree to abide by its terms.
+
+## Contributing
+
+Contributions to the package are encouraged. For detailed information on how to contribute, please refer to the [CONTRIBUTING](CONTRIBUTING.md) guidelines.
 
 
 ## Reporting Issues & Seeking Support
