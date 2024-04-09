@@ -5,7 +5,7 @@ Authors@R: c(
     person("Naeem", "Khoshnevis", email = "nkhoshnevis@g.harvard.edu",
            role=c("aut"), 
            comment = c(ORCID = "0000-0003-4315-1426", AFFILIATION="HUIT")),
-    person("Boyu", "Ren", email = "bren@partners.org",
+    person("Boyu", "Ren", email = "bren@mgb.org",
            role= c("aut","cre"),            
            comment = c(ORCID = "0000-0002-5300-1184", AFFILIATION="McLean Hospital")),
     person("Tanujit", "Dey", email = "tdey@bwh.harvard.edu",
