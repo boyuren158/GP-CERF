@@ -1,3 +1,19 @@
+Resubmission (April 11, 2024)
+
+We appreciate your efforts in reviewing the GPCERF 0.2.4 package. In this upgrade, we:
+
+- Refer to the arXiv e-print via its DOI directly.
+
+Regarding the other two notes:
+
+- CONTRIBUTING.md is a md file in the project folder and this URI works as intended so we didn't make any change
+- Rcpp cannot be removed from LinkingTo as it will cause compilation error
+
+All tests and checks have passed successfully.
+
+Best regards,
+Boyu Ren
+
 Submission (April 9, 2024):
 
 We appreciate your efforts in reviewing the GPCERF 0.2.4 package. In this upgrade, we:
