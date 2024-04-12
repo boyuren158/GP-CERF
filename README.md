@@ -199,7 +199,7 @@ Please note that the GPCERF project is released with a [Contributor Code of Cond
 
 ## Contributing
 
-Contributions to the package are encouraged. For detailed information on how to contribute, please refer to the [CONTRIBUTING](./CONTRIBUTING.md) guidelines.
+Contributions to the package are encouraged. For detailed information on how to contribute, please refer to the CONTRIBUTING guidelines.
 
 
 ## Reporting Issues & Seeking Support
