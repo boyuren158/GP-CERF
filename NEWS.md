@@ -1,3 +1,9 @@
+# GPCERF 0.2.4 (2024-04-09)
+
+## Changed
+
+- Dr. Boyu Ren is now the package maintainer.
+
 # GPCERF 0.2.3 (2024-03-02)
 
 ## Changed
