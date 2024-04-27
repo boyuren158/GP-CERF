@@ -6,20 +6,20 @@
 \alias{GPCERF}
 \title{The 'GPCERF' package.}
 \description{
-Description
-}
-\details{
-Details
+Provides a non-parametric Bayesian framework based on Gaussian process priors
+for estimating causal effects of a continuous exposure and detecting change
+points in the causal exposure response curves using observational data.
 }
 \references{
-
+Ren, B., Wu, X., Braun, D., Pillai, N. and Dominici, F., 2021. Bayesian
+modeling for exposure response curve via gaussian processes: Causal effects
+of exposure to air pollution on health outcomes. arXiv preprint
+arXiv:2105.03454.
 }
 \author{
 Naeem Khoshnevis
 
 Boyu Ren
-
-Tanujit Dey
 
 Danielle Braun
 }

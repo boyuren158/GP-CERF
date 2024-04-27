@@ -1,0 +1,40 @@
+url: https://NSAPH-Software.github.io/GPCERF/
+
+home:
+  title: Gaussian Process (GP) approach for nonparametric modeling.
+
+template:
+  bootstrap: 5
+
+reference:
+  - title: Estimate CERF with Gaussain Process
+    contents:
+    - GPCERF-package
+    - estimate_cerf_gp
+    - estimate_cerf_nngp
+    - compute_rl_deriv_gp
+    - compute_rl_deriv_nn
+  - title: Utilities
+    contents:
+    - generate_synthetic_data
+    - estimate_gps
+    - compute_w_corr
+    - set_logger
+    - get_logger
+    - plot.cerf_gp
+    - plot.cerf_nngp
+    - print.cerf_gp
+    - print.cerf_nngp
+    - summary.cerf_gp
+    - summary.cerf_nngp
+
+articles:
+  - title: Introduction
+    navbar: Introduction
+    contents: [Standard-Gaussian-Processes,
+               Nearest-neighbor-Gaussian-Processes,
+               A-Note-on-Choosing-Hyperparameters]
+
+  - title: Collabration
+    navbar: Collabration
+    contents: [Developers-Guide]
