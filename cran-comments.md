@@ -1,9 +1,8 @@
-Submission (March 2, 2024):
+Submission (April 9, 2024):
 
-We appreciate your efforts in reviewing the GPCERF 0.2.3 package. In this upgrade, we:
+We appreciate your efforts in reviewing the GPCERF 0.2.4 package. In this upgrade, we:
 
-- Modified the method by which the user specifies the covariate columns.
-- Resolved an issue involving data that contains a single covariate.
+- Transfer the maintainer role from Dr. Naeem Khoshnevis to Dr. Boyu Ren. 
 
 All tests and checks have passed successfully.
 
